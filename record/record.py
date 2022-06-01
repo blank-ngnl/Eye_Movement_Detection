@@ -20,6 +20,8 @@ def main():
                     quit()
                 if event.key == pygame.K_RETURN:
                     game_start(window)
+                    pygame.quit()
+                    quit()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()

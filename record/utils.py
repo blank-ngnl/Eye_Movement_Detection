@@ -9,7 +9,7 @@ from threading import Thread
 LSL_SCAN_TIMEOUT = 5
 
 def start_record():
-    record(600)
+    record(500, continuous=False)
 
     # Note: Recording is synchronous, so code here will not execute until the stream has been closed
     print('Recording has ended')
@@ -79,8 +79,10 @@ def game_init():
 
 def my_delay(delay_time):
     ticks = pygame.time.get_ticks()
+    #print(time.time(), ticks)
     while pygame.time.get_ticks() < ticks + delay_time:
         pygame.event.pump()
+    #print(time.time(), pygame.time.get_ticks(), delay_time)
 
 def game_start(window):
     # Set up LabStreamingLayer stream.
@@ -116,7 +118,7 @@ def game_start(window):
         'Idle': 3,
         'Rest': 4, # not marker
         'Start': 99,
-        'End': 100
+        'End': 100,
     }
     sequence = np.concatenate((np.ones(50) * 1, np.ones(50) * 2, np.ones(50) * 3), axis=0)
     np.random.shuffle(sequence)
@@ -126,8 +128,10 @@ def game_start(window):
     sequence = np.reshape(sequence, -1)
     sequence = sequence[:-1]
     #print(sequence)
+    #print(np.sum(sequence))
 
     for event in sequence:
+        #print(event)
         #print(time.time())
         if event == markers["Left"]:
             window.fill("red")
