@@ -1,32 +1,26 @@
-import pandas as pd
+from utils import *
 
-def import_data(filename, path):
-    data = pd.read_csv(path + filename)
-    return data
-
-def extract_epoch(raw_data):
-    srate = 256
-    markers = {
-        'Left': 1,
-        'Right': 2,
-        'Idle': 3,
-        'Rest': 4, # not marker
-        'Start': 99,
-        'End': 100
-    }
-    selected_channels = ["TP9", "AF7", "AF8", "TP10"]
-    duration = [-0.25, 1.75]
-
-    X = []
-    Y = []
-    count = 0
-    events = raw_data["Marker0"]
-    for i, event in enumerate(events):
-        if event == markers["Right"]:
-            new_trial = []
-            for channel in selected_channels:
-                new_trial = raw_data[channel][i+duration[0]*srate:i+duration[1]*srate]
+preprocess = True
+filename = "Ivan_EEG_recording_2022-05-29-13.06.19.csv"
+folder_path = "./record/"
 
 if __name__ == "__main__":
-    raw_data = import_data("Ivan_EEG_recording_2022-05-29-13.06.19.csv", "./record/")
-    extract_epoch(raw_data)
+    raw_data = import_data(filename, folder_path)
+    raw_data = raw_data.to_numpy(copy=True)
+
+    if preprocess == True:
+        # bandpass filter (l_freq-h_freq Hz)
+        timestamps, raw_eeg_data, markers = preprocess_raw(raw_data, l_freq=1, h_freq=100, plot=False)
+    else:
+        timestamps = raw_data[:, 0]
+        raw_eeg_data = np.moveaxis(raw_data[:, 1:5], [0, 1], [1, 0])
+        markers = raw_data[:, 6]
+    print("timestamps: ", timestamps.shape, ", raw_eeg_data: ", raw_eeg_data.shape, ", markers: ", markers.shape)
+
+    X, Y = extract_epoch(timestamps, raw_eeg_data, markers)
+
+    # X = ICA(X)
+    # visualize_data(X, Y)
+
+    train_classifier(X, Y)
+    
