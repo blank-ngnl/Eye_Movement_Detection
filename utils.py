@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import mne
+from mne.preprocessing import ICA
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
@@ -32,10 +33,11 @@ def preprocess_raw(raw_data, l_freq, h_freq, plot=True):
 
     raw = mne.io.RawArray(raw_eeg_data, info)
     if plot:
-        raw.plot(block=True, clipping=None, scalings={"eeg": 200})
+        raw.plot(block=True, clipping=None, scalings={"eeg": 200}, title="raw")
     raw.filter(l_freq=l_freq, h_freq=h_freq)
     if plot:
-        raw.plot(block=True, clipping=None, scalings={"eeg": 200})
+        raw.plot(block=True, clipping=None, scalings={"eeg": 200}, title="bandpass filtered")
+        plt.show()
 
     return timestamps, raw.get_data(), markers
 
@@ -74,21 +76,79 @@ def extract_epoch(timestamps, raw_eeg_data, markers):
 """
 Apply Independent Component Analysis (ICA)
 """
-def ICA(X):
+def apply_ICA(X, threshold, plot=True):
     ch_names = ["TP9", "AF7", "AF8", "TP10"]
     ch_types = ['eeg'] * 4
     info = mne.create_info(ch_names, ch_types=ch_types, sfreq=srate)
     info.set_montage('standard_1020')
     X = mne.EpochsArray(X, info)
-    X.plot(n_epochs=1)
+    if plot:
+        X.plot(n_epochs=1, block=True, scalings={"eeg": 200}, title="epochs")
 
-    return X
+    ica = ICA(max_iter='auto', random_state=97)
+    ica.fit(X)
+    if plot:
+        ica.plot_sources(X, block=True, title="sources")
+        ica.plot_components(title="components")
+    
+    eog_indices, eog_scores = ica.find_bads_eog(X, ch_name=["AF7", "AF8"], threshold=threshold)
+    print("eog_indices: ", eog_indices)
+
+    exclude_indices = list(range(ica.n_components_))
+    for index in eog_indices:
+        if index in exclude_indices:
+            exclude_indices.remove(index)
+
+    if plot:
+        ica.plot_scores(eog_scores, eog_indices)
+        ica.plot_properties(X, picks=eog_indices)
+    X_eog = ica.apply(X.copy(), exclude=exclude_indices)
+    if plot:
+        X_eog.plot(n_epochs=1, block=True, scalings={"eeg": 200}, title="eog epochs")
+
+    return X_eog.get_data()
 
 """
 Visualize data
 """
 def visualize_data(X, Y):
     None
+
+"""
+Process data from multiple subjects 
+import data -> bandpass filter -> extract epochs -> ICA -> store data using dictionary
+"""
+def preprocess_pipeline(filenames, path, l_freq=None, h_freq=None, threshold=None, plot=True):
+    Xs, Ys = {}, {}
+
+    for filename in filenames:
+        print(filename)
+
+        raw_data = import_data(filename, path)
+        raw_data = raw_data.to_numpy(copy=True)
+
+        # bandpass filter
+        if l_freq == None and h_freq == None:
+            timestamps = raw_data[:, 0]
+            raw_eeg_data = np.moveaxis(raw_data[:, 1:5], [0, 1], [1, 0])
+            markers = raw_data[:, 6]
+        else:
+            timestamps, raw_eeg_data, markers = preprocess_raw(raw_data, l_freq=l_freq, h_freq=h_freq, plot=plot)
+        
+        print("timestamps: ", timestamps.shape, ", raw_eeg_data: ", raw_eeg_data.shape, ", markers: ", markers.shape)
+
+        X, Y = extract_epoch(timestamps, raw_eeg_data, markers)
+
+        if threshold is not None:
+            X = apply_ICA(X, threshold, plot=plot)
+
+        # visualize_data(X, Y)
+
+        Xs[filename[:-4]] = X
+        Ys[filename[:-4]] = Y
+
+    return Xs, Ys
+
 
 """
 Train and evaluate classifer
