@@ -95,7 +95,7 @@ Train and evaluate classifer
 """
 def train_classifier(X, Y):
     X = X.reshape(X.shape[0], -1)
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
     clf = make_pipeline(StandardScaler(), SVC(kernel='linear', gamma='auto'))
     clf.fit(X_train, Y_train)
     Y_hat = clf.predict(X_test)
