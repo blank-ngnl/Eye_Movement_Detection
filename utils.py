@@ -3,11 +3,9 @@ import numpy as np
 import mne
 from mne.preprocessing import ICA
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
+from model import *
 
 srate = 256
 
@@ -149,14 +147,24 @@ def preprocess_pipeline(filenames, path, l_freq=None, h_freq=None, threshold=Non
 
     return Xs, Ys
 
-
 """
 Train and evaluate classifer
 """
-def train_classifier(X, Y):
-    X = X.reshape(X.shape[0], -1)
+def train_classifier(X, Y, classifier="svm"):
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=42)
-    clf = make_pipeline(StandardScaler(), SVC(kernel='linear', gamma='auto'))
+
+    clf = my_clf(classifier)
     clf.fit(X_train, Y_train)
     Y_hat = clf.predict(X_test)
+    print("using classifier: ", classifier)
+    print("test accuracy: ", accuracy_score(Y_test, Y_hat))
+
+def train_classifer_cross_subject(Xs, Ys, train_subject, test_subject, classifier="svm"):
+    X_train, Y_train = Xs[train_subject], Ys[train_subject]
+    X_test, Y_test = Xs[test_subject], Ys[test_subject]
+
+    clf = my_clf(classifier)
+    clf.fit(X_train, Y_train)
+    Y_hat = clf.predict(X_test)
+    print("using classifier: ", classifier)
     print("test accuracy: ", accuracy_score(Y_test, Y_hat))
