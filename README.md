@@ -6,15 +6,31 @@
 
 ## Introduction
 
-This project aims to develop a faster and more efficient way to unlock and control our phones using BCI approach. 
-We propose an innovative application (now first supported in ios) that can help you to control your phone by just blinking. 
-The eye blinking EEG signals collected by the Muse2 headband are used to train a classifier classifying blinks from right eye and left eye. 
-The different blinking EEG signals will be taken as the authentication to the phones and correspond to the different functionalities, like unlocking your phone, playing music.
+This project aims to develop a faster and more efficient way to unlock and control our phones using BCI approach.  <br>
+We propose an innovative application that can help you to control your phone by just blinking.  <br>
+The eye blinking EEG signals collected by the Muse2 headband are used to train a classifier classifying blinks from right eye and left eye.  <br>
+The different blinking EEG signals will be taken as the authentication to the phones and correspond to the different functionalities, like unlocking your phone, playing music. <br>
 Therefore, with our application, everyone can unlock their phone in the blink of an eye.
-
+ <br>
 ## Video Demo
 
-## 'Command' for train.py
+## Quick Start
+### Application (now first supported in ios)
+
+### Training
+You can run the training code with:
+```shell 
+python train.py
+```
+#### Parameters for train.py
+`-c` for choosing the classifier (svm or lda) <br>
+`-f` for selecting the training subject ("Ivan", "Aubrey", "Christian", "Christian_1", "Rena")
+`-s` <br>
+`-lf` <br>
+`-hf` <br>
+`-t` <br>
+`-p` <br>
+#### example:
 
 
 ## Installation instructions
