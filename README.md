@@ -1,10 +1,9 @@
 # Eye_Movement_Detection
 
-## BCI Final Project - Blink ID
+## BCI Final Project - EyeLocker
 
 ### Authors: Ivan Lim, Christian Lin, Aubrey Tseng
 
-![image](https://user-images.githubusercontent.com/58105978/172196674-77e83dc8-3139-451e-a38f-9173c4843405.png)
 <br>
 
 ## Introduction
@@ -47,7 +46,7 @@ After installing, comment out the ```await asyncio.wait_for(event.wait(), timeou
 Line 268 in anaconda3/envs/bci/Lib/site-packages/bleak/backends/winrt/client.py.
 
 ## Dataset
-The data is collected from 4 subjects using the Muse2 headband with the experimental paradigm is shown below. <br>
+The data is collected from 4 subjects using the Muse2 headband (channels: "TP9", "AF7", "AF8", "TP10") with the experimental paradigm is shown below. <br>
 We record 150 trials for each subject, and each event (blink left eye, blink right eye, idle) consists of 50 trials. <br>
 The time of the red and blue screen presented on the screen is fixed, and the duration is set to 0.5 seconds, 
 while the idle time is set between 1.5 seconds and 2.5 seconds. <br>
@@ -56,10 +55,27 @@ As shown in the table below, each arrow represents an event, and there is an idl
 ![image](https://user-images.githubusercontent.com/58105978/172196351-78588c07-7da3-42a0-8302-0191aef7e923.png) <br>
 The experiment is designed requiring the participant to sit in front of a monitor and perform eye blinking movements according to the screen’s colour. <br>
 The participant is asked to blink his left eye once if the colour red is shown on the screen and blink his right eye once if the colour is blue while remaining idle if the black colour is displayed. <br>
-
-
-
+We recorded the EEG sinals of 4 channels: "TP9", "AF7", "AF8", "TP10" with 3 markers: "Blink right eye", "Blink left eye", "idle". <br>
+The EEG data is saved in the csv file format including the timestamps, the 4 channels and the markers. <br>
 
 ## Methodology
+
+### EEG Preprocessing
+
+#### Bandpass Filtering
+
+#### Extract Epoch from Raw Data
+
+#### Independent Component Analysis (ICA)
+
+### Feature Extraction
+
+#### Common Spatial Patterns
+
+### Classifier
+
+#### SVM
+
+#### Linear Discriminant Analysis (LDA)
 
 ## Results
