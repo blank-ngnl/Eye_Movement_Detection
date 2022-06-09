@@ -9,11 +9,15 @@ from model import *
 from pylsl import StreamInlet, resolve_byprop
 import time
 from threading import Thread
+import socketio
+import eventlet
 
 srate = 256
 res = []
 timestamps = []
 stop = False
+app_connect = False
+event = None
 
 """
 Import data from CSV file
@@ -261,15 +265,54 @@ def collect_data():
             timestamps = np.concatenate((timestamps, timestamp), axis=0)
             res = res[-10*srate:, :]
             timestamps = timestamps[-10*srate:]
+"""
+App Connection
+"""
+def connect_app():
+    global app_connect, event
+    # create a Socket.IO server
+    sio = socketio.Server()
+
+    # wrap with a WSGI application
+    app = socketio.WSGIApp(sio)
+
+    @sio.event 
+    def connect(sid, environ):
+        global app_connect
+        print('Connection', sid)
+        app_connect = True
+
+    @sio.event
+    def get_event(sid, data):
+        global app_connect, event
+        print("get_event")
+        print(app_connect, event)
+        if app_connect and event is not None:
+            sio.emit('get_event', event)
+            event = None
+
+    @sio.event
+    def disconnect(sid):
+        print('Disconnection')
+
+    @sio.event
+    def update(data):
+        print(data)
+
+    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
 
 """
 Inference
 """
 def inference(clf, l_freq=None, h_freq=None, threshold=None):
-    global stop
-    # collect data
-    collect_thread = Thread(target=collect_data)
+    global stop, event
+
+    collect_thread = Thread(target=collect_data, daemon=True)
     collect_thread.start()
+    time.sleep(5)
+
+    connect_thread = Thread(target=connect_app, daemon=True)
+    connect_thread.start()
     time.sleep(5)
 
     try:
@@ -308,9 +351,10 @@ def inference(clf, l_freq=None, h_freq=None, threshold=None):
                 for i in Y_hat:
                     output[int(i)-1] += 1
                 print(np.argmax(output)+1)
+                event = str(np.argmax(output)+1)
 
                 print(time.time())
-                time.sleep(1)
+                time.sleep(5)
                 print(time.time())
 
                 # send output
@@ -318,4 +362,6 @@ def inference(clf, l_freq=None, h_freq=None, threshold=None):
     except KeyboardInterrupt:
         stop = True
         print("exiting...")
-        collect_thread.join()
+
+
+
