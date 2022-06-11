@@ -16,6 +16,10 @@ With our application, everyone can unlock their phone in the blink of an eye.
  <br>
 ## Video Demo
 
+https://user-images.githubusercontent.com/58105978/173186608-ba85f494-63dc-41ab-bd9f-6de6fa5950fe.mp4
+
+
+
 ## Application (now supported in iOS)
 For the iOS EyeLocker app code, you can refer to the EyeLocker github page: https://github.com/ChristianLin0420/EyeLocker<br>
 When the code, app and the Muse2 headband are all connected, the classifier will start predicting the EEG signal sent from the Muse2 headband. <br>
