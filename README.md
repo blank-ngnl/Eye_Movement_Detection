@@ -23,10 +23,10 @@ https://user-images.githubusercontent.com/58105978/173186608-ba85f494-63dc-41ab-
 ## Application (now supported in iOS)
 For the iOS EyeLocker app code, you can refer to the EyeLocker github page: https://github.com/ChristianLin0420/EyeLocker<br>
 When the code, app and the Muse2 headband are all connected, the classifier will start predicting the EEG signal sent from the Muse2 headband. <br>
-Then, the output prediction: **1: blink right eye**, **2: blink left eye**, **3: idle** will be sent as the classified command to control the app. <br>
+Then, the output prediction: **1: blink left eye**, **2: blink right eye**, **3: idle** will be sent as the classified command to control the app. <br>
 Here, we develop some functionalities including unlocking the app, play/pause and replay the music. <br>
-`1: blink right eye`: unlocking the app, play and pause the music <br>
-`2: blink left eye`: replay the music <br>
+`1: blink left eye`: replay the music <br>
+`2: blink right eye`: unlocking the app, play and pause the music <br>
 
 ## Installation instructions
 
