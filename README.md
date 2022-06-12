@@ -48,7 +48,7 @@ We record 150 trials for each subject, and each event (blink left eye, blink rig
 The time of the red and blue screen presented on the screen is fixed, and the duration is set to 0.5 seconds, 
 while the idle time is set to 2 seconds. <br>
 The order in which these events appeared on the screen is random, this means there is no regular pattern, so the subject needs to be highly concentrated during the whole experiment. <br>
-As shown in the table below, each arrow represents an event, and there is an idle period for the subject to recover before and after each event because the blinking eye is quite tiring if it is performed frequently. <br>
+As shown in the table below, each arrow represents an event, and there is an rest period for the subject to recover before and after each event because the blinking eye is quite tiring if it is performed frequently. <br>
 ![image](https://user-images.githubusercontent.com/58105978/173168116-ed4e7b76-a9ea-4c19-a907-9cebe13b99d4.png) <br>
 The experiment is designed requiring the participant to sit in front of a monitor and perform eye blinking movements according to the screen’s colour. <br>
 The participant is asked to blink his left eye once if the colour red is shown on the screen and blink his right eye once if the colour is blue while remaining idle if the black colour is displayed. <br>
@@ -61,13 +61,18 @@ First, use `startmusestream.py` in the `record` folder to connect to the muse he
 
 #### Bandpass Filtering
 We apply bandpass filter to the EEG signal with low pass and high pass frequency set to 1 to 100 HZ, which can keep the signal data in this frequency range and prevent the noise outside this range. <br>
-(The lower and higher cutoff frequency can both be adjustd in `train.py` and `test.py`.) <br>
+(The lower and higher cutoff frequency can both be adjusted in `train.py` and `test.py`.) <br>
 #### Extract Epoch from Raw Data
 The raw data is then extracted according to the 3 events (blink left eye, blink right eye, idle), <br> we extract epoch data 0.25s before the event and 1.75s after the event. <br>
 #### Independent Component Analysis (ICA)
 We also use ICA to try to extract the independent sources signals (the blinking eog artifact) from the mixed EEG signal data. <br>
-The channel AF7 and AF8 are taken as the reference. <br> The lower threshold data will be kept because they are similar to the eog artifact (AF7 and AF8). <br>
-The higher threshold data is not taken as the eog artifact and it will reject more component, and the matrix is set to 0 during inverse.
+The channel AF7 and AF8 are taken as the reference. <br>
+The lower the threshold, the more the data will be kept because they are similar to the eog artifact. <br>
+The higher the threshold, the more the data is not taken as the eog artifact because it will reject more components. <br>
+We remove the unrelated components by setting the value of these components in the unmixing matrix to 0 during the inverse process. <br>
+We found that using ICA decreases the final accuracy. <br>
+The possible reason might because ICA is originally for the purpose of removing artifact, in contrast, our experiment needs to record the eog artifact. <br>
+Therefore, although we use ICA to keep the eog artifact, there still might cause some loss of the important information. <br>
 
 ### Feature Extraction
 
@@ -130,13 +135,14 @@ python train.py
 `-p` for plotting the five subjects' raw and bandpass filtered data (also plotting the component if the ICA was set) <br>
 
 ### Testing
-You can run the testing (predict) code with:
+Before running the testing code, you first need to run the `startMuseStream.py` and `record.py`.
+Then, you can run the testing (predict) code with:
 ```shell 
 python test.py
 ```
 #### Parameters for `test.py`
 `-c` for choosing the classifier (svm or lda, default: lda) <br>
-`-s` for selecting the testing subject ("Ivan", "Ivan_1", "Aubrey", "Christian", "All", default: `None`)<br>
+`-s` for selecting the testing subject ("Ivan", "Ivan_1", "Aubrey", "All", default: `None`)<br>
 `-lf` for setting the lower cutoff frequency (default: 1) <br>
 `-hf` for setting the higher cutoff frequency (default: 100)<br>
 `-t` for setting the ICA threshold (default: `None`)<br>
