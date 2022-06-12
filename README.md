@@ -54,6 +54,10 @@ The experiment is designed requiring the participant to sit in front of a monito
 The participant is asked to blink his left eye once if the colour red is shown on the screen and blink his right eye once if the colour is blue while remaining idle if the black colour is displayed. <br>
 We recorded the EEG sinals of 4 channels: "TP9", "AF7", "AF8", "TP10" with 3 markers: "Blink right eye", "Blink left eye", "idle". <br>
 First, use `startmusestream.py` in the `record` folder to connect to the muse headband, then, call `record.py` to record the EEG signal raw data and save them in the csv file format including the timestamps, the 4 channels and the markers. <br>
+<br>
+Figures below shown Ivan's 1-100 Hz band pass filtered raw data <br>
+<img src="https://user-images.githubusercontent.com/58105978/173228042-905b339c-8d42-47cc-9fc1-4b4f2100ff5e.png" width="500">
+<img src="https://user-images.githubusercontent.com/58105978/173228042-905b339c-8d42-47cc-9fc1-4b4f2100ff5e.png" width="500">
 
 ## Methodology
 
@@ -71,7 +75,7 @@ The lower the threshold, the more the data will be kept because they are similar
 The higher the threshold, the more the data is not taken as the eog artifact because it will reject more components. <br>
 We remove the unrelated components by setting the value of these components in the unmixing matrix to 0 during the inverse process. <br>
 We found that using ICA decreases the final accuracy. <br>
-The possible reason might because ICA is originally for the purpose of removing artifact, in contrast, our experiment needs to record the eog artifact. <br>
+The possible reason might be ICA is originally for the purpose of removing artifact, in contrast, our experiment needs to record the eog artifact. <br>
 Therefore, although we use ICA to keep the eog artifact, there still might cause some loss of the important information. <br>
 
 ### Feature Extraction
@@ -135,7 +139,7 @@ python train.py
 `-p` for plotting the five subjects' raw and bandpass filtered data (also plotting the component if the ICA was set) <br>
 
 ### Testing
-Before running the testing code, you first need to run the `startMuseStream.py` and `record.py`.
+Before running the testing code, you first need to run the `startMuseStream.py`.
 Then, you can run the testing (predict) code with:
 ```shell 
 python test.py
