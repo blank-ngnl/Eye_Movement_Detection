@@ -57,7 +57,7 @@ First, use `startmusestream.py` in the `record` folder to connect to the muse he
 <br>
 Figures below shown Ivan's 1-100 Hz band pass filtered raw data <br>
 <img src="https://user-images.githubusercontent.com/58105978/173228042-905b339c-8d42-47cc-9fc1-4b4f2100ff5e.png" width="500">
-<img src="https://user-images.githubusercontent.com/58105978/173228042-905b339c-8d42-47cc-9fc1-4b4f2100ff5e.png" width="500">
+<img src="https://user-images.githubusercontent.com/58105978/173230557-b86f0cf1-8ad9-4028-b3a4-084d0d0138b1.png" width="500">
 
 ## Methodology
 
